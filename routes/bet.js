@@ -1,4 +1,4 @@
-const bet = require("../models/bet");
+const bet = require("../controllers/bet");
 
 const router = require("express").Router();
 

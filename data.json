@@ -1,0 +1,29 @@
+{
+    "cards":[ "2h", "3d", "4s"],
+    "close_pana" : "284",
+    "hold" : false,
+    "lastCard": "8s",
+    
+    "lastRoundID": "1687887439680",
+    
+    "open_pana": "413",
+    
+    "roundID": "1688683686302",
+    
+    "roundStarted": "2023-07-06T22:48:06.302Z",
+    
+    "state": "show result/winners",
+    
+    "stateStarted": "1688683841979",
+    
+    "tableID": "52",
+    
+    "tableIsLocked": false,
+    
+    "timeLeft": "1",
+    
+    "type":"newState"
+    }
+
+
+    

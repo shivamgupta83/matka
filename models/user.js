@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const objectId = mongoose.Schema.Types.ObjectId;
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -13,7 +13,11 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-  }
+  },
+  accountId: {
+    type:objectId,
+    ref:"userAccount"
+  },
 },{timestamps: true});
 
 const User = mongoose.model('User', UserSchema);

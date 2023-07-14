@@ -10,9 +10,9 @@ mongoose.connect("mongodb+srv://123:1234@cluster0.pf4v08v.mongodb.net/matka-01",
 .catch((err)=>{console.log(err)})
 
 
-app.use("/user",require("./routs/user"))
-app.use("/api",require("./routs/bet"))
-
+app.use("/user",require("./routes/user"))
+app.use("/api",require("./routes/bet"))
+app.use("/games",require("./routes/ank"))
 
 
 app.get("/", (req, res) => {

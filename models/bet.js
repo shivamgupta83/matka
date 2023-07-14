@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const betSchema = new mongoose.Schema({
+  "game_id" : String,
     userId : {
     type: String,
     required: true
@@ -13,7 +14,7 @@ const betSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  selectedNumbers :[Number],
+  selectedNumber :Number,
 },{timestamps: true});
 
 const bet = mongoose.model('bet', betSchema);

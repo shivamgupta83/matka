@@ -5,13 +5,13 @@ const userAccount = require("../models/userAccount");
 
 const bet = async(req,res)=>{
 try {
-let {userId,round_id,betType,betAmount,selectedNumber} = req.body;
+let {userId,round_id,betType,betAmount,selectedNumbers} = req.body;
 
 if (!round_id) return res.send({ status: 400, message: "Invalid input.Please provide a valid round_id", successData:""})
 if (!userId) return res.send({ status: 400, message: "Invalid input.Please provide a valid user ID", successData:""})
 if (!betType) return res.send({ status: 400, message: "betType input.Please provide a valid betType" ,successData:""})
 if (betAmount.length==0) return res.send({ status: 400, message: "betAmount input.Please provide a valid betAmount" ,successData:""})
-if (!selectedNumber) return res.send({ status: 400, message: "selectedNumbers input.Please provide a valid selectedNumber",successData:""})
+if (!selectedNumbers) return res.send({ status: 400, message: "selectedNumbers input.Please provide a valid selectedNumber",successData:""})
 
 const userAC = await User.findById(userId).populate({path:"accountId",select:{userTotalAmount:1}})
 

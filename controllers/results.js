@@ -105,8 +105,31 @@ const results = async (req, res) => {
             }
 
             if (betData.betType == "TP") {
-                return ""
+
+                let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).sort((a, b) => a - b).join("")
+
+                let updatedData;
+
+                for (let a = 0; a < betData.selectedNumbers.length; a++) {
+
+                    let userTotalNewAmount = isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 700);
+                    if (betData.selectedNumbers[a] == cardData) {
+                     
+                        updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
+                            userTotalAmount: userTotalNewAmount
+                        }, { new: true })
+
+                    }
+                }
+
+                res.send({ status: 200, message: "success", userData: updatedData })
+
             }
+
+            else {
+                res.send({ status: 400, message: false , wining: 0 })
+            }
+
         })
     }
     catch (err) {

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const betSchema = new mongoose.Schema({
-  round_id : {
+  round_id :{
     type: String,
     required: true
   },
@@ -14,7 +14,7 @@ const betSchema = new mongoose.Schema({
     required: true
   },
   betAmount : {
-    type: Number,
+    type: [Number],
     required: true,
   },
   selectedNumbers :[Number]

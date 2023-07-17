@@ -17,7 +17,7 @@ const userAC = await User.findById(userId).populate({path:"accountId",select:{us
 
 if(!userAC) return res.status(404).send({status:400,message:"invalid input :> user detail not present in database"})
  betAmount=await betAmount.reduce((a,b)=>a+b)
-console.log(betAmount)
+// console.log(betAmount)
 if(+userAC.accountId.userTotalAmount<betAmount)
 return res.status(400).send({status:false,message:"invalid bet ammount",data:userAC.accountId.userTotalAmount})
 
@@ -28,7 +28,6 @@ return res.send({status:200,message : "createdBet", successData:{
     bet : createdBet,
     userTotalAmmount : userTotalAmmount.userTotalAmount
 }})
-
 }
 catch (err){
     return res.send({ status: 400, message:err.message+"Internal server error. Please try again later."})

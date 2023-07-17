@@ -12,7 +12,7 @@ mongoose.connect("mongodb+srv://123:1234@cluster0.pf4v08v.mongodb.net/matka-01",
 
 app.use("/user",require("./routes/user"))
 app.use("/api",require("./routes/bet"))
-app.use("/games",require("./routes/ank"))
+app.use("/games",require("./routes/results"))
 
 
 app.get("/", (req, res) => {

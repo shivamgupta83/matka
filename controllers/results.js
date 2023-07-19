@@ -15,18 +15,23 @@ const results = async (req, res) => {
 
         let usersData_succ   =[{ status: true }];
         let usersData_unsucc =[{ status: false }];
-let userNotFound = [];
+        let userNotFound = [];
+
         for (let a = 0; a < allBetData.length; a++) {
 
             let betData = allBetData[a]
             var isUser = await User.findById(betData.userId).populate({ path: "accountId", select: { userTotalAmount: 1 } })
-            if (!isUser) userNotFound.push({ status: 400, message: "user data is not present", successData: "" })
-
+            if (!isUser) {
+                userNotFound.push({ status: 400, message: "user data is not present", successData: "" })
+                continue;
+            }
             let json = path.resolve('data.json')
             const readFile = fs.readFileSync(json, "utf-8")
 
             if (betData.betType == "ANK") {
+
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
+
                 if (+cardData == betData.selectedNumbers[0]) {
                     let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                         userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 9)
@@ -39,6 +44,7 @@ let userNotFound = [];
             }
 
             if (betData.betType == "SP") {
+
                 if (betData.selectedNumbers.length == 1) {
 
                     let cardData = JSON.parse(readFile).cards.map((a) => +a.match(/\d+/)).sort((a, b) => a - b).map((a) => {
@@ -100,6 +106,7 @@ let userNotFound = [];
                         let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                             userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 270)
                         }, { new: true })
+                        
                         usersData_succ.push({ status: 200, message: "success", userData: updatedData })
                     }
                 }
@@ -157,7 +164,7 @@ let userNotFound = [];
                 usersData_succ.push({ status: 200, message: "success", userData: updatedData })
             }
         }
-        res.send({ status: 400, message: false, usersData_succ, usersData_unsucc })
+        res.send({ status: 400, message: false, usersData_succ, usersData_unsucc ,userNotFound})
     }
     catch (err) {
 

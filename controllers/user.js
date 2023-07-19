@@ -1,8 +1,7 @@
 const userModel = require("../models/user");
 const userAccount = require("../models/userAccount");
 
-// 64b072dcdf777fc8ff759e70 user id
-// 64b07969597461ee89b2fdbb bet id
+
 let register = async (req, res) => {
     try {
         let requestBody = req.body;

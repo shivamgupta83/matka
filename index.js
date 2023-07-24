@@ -3,8 +3,10 @@ const app = express()
 const WebSocket = require("ws");
 app.use(express.json())
 const {default:mongoose} =require("mongoose")
+const cors = require("cors")
 
 
+app.use(cors());
 mongoose.connect("mongodb+srv://123:1234@cluster0.pf4v08v.mongodb.net/matka-01",{useNewUrlParser:true})
 .then(()=>{console.log("mongodb is connected")})
 .catch((err)=>{console.log(err)})

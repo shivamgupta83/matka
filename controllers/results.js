@@ -163,6 +163,59 @@ const results = async (req, res) => {
                 }
                 usersData_succ.push({ status: 200, message: "success", userData: updatedData })
             }
+
+if(betData.betType=="low-line"){        
+    let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
+
+    for (let e = 0; e < betData.selectedNumbers.length; e++) {
+        if(cardData == betData.selectedNumbers[e]){
+        let userTotalNewAmount = isUser.accountId.userTotalAmount
+        updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
+            userTotalAmount: userTotalNewAmount*1.90
+        }, { new: true })
+        isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount*1.90;
+    }    
+}
+}
+if(betData.betType=="high-line"){        
+    let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
+
+    for (let e = 0; e < betData.selectedNumbers.length; e++) {
+        if(cardData == betData.selectedNumbers[e]){
+        let userTotalNewAmount = isUser.accountId.userTotalAmount
+        updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
+            userTotalAmount: userTotalNewAmount*1.90
+        }, { new: true })
+        isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount*1.90;
+    }    
+}
+}
+if(betData.betType=="odd"){        
+    let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
+
+    for (let e = 0; e < betData.selectedNumbers.length; e++) {
+        if(cardData == betData.selectedNumbers[e]){
+        let userTotalNewAmount = isUser.accountId.userTotalAmount
+        updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
+            userTotalAmount: userTotalNewAmount*1.90
+        }, { new: true })
+        isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount*1.90;
+    }    
+}
+}
+if(betData.betType=="even"){        
+    let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
+
+    for (let e = 0; e < betData.selectedNumbers.length; e++) {
+        if(cardData == betData.selectedNumbers[e]){
+        let userTotalNewAmount = isUser.accountId.userTotalAmount
+        updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
+            userTotalAmount: userTotalNewAmount*1.90
+        }, { new: true })
+        isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount*1.90;
+    }    
+}
+}
         }
         res.send({ status: 400, message: false, usersData_succ, usersData_unsucc ,userNotFound})
     }

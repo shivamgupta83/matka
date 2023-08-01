@@ -19,7 +19,7 @@ if(!userAC) return res.status(404).send({status:400,message:"invalid input :> us
  betAmount=await betAmount.reduce((a,b)=>a+b)
 // console.log(betAmount)
 if(+userAC.accountId.userTotalAmount<betAmount)
-return res.status(400).send({status:false,message:"invalid bet ammount",data:userAC.accountId.userTotalAmount})
+return res.status(400).send({status:false,message:"Less User ammount",data:userAC.accountId.userTotalAmount})
 
 const userTotalAmmount = await userAccount.findOneAndUpdate({userId},{userTotalAmount:userAC.accountId.userTotalAmount-betAmount},{new:true})
 

@@ -737,7 +737,7 @@ const wsResults = async (req, ws) => {
 
 const wsResultPerUser =async (req,ws)=>{
 
-    const { userId,betId } = req.params;
+    const { userId,betId } = req;
 
     if (!userId) return ws.send(JSON.stringify({ status: 400, message: "Invalid input.Please provide a valid user ID", successData: "" }))
 
@@ -765,9 +765,9 @@ const readFile = fs.readFileSync(json, "utf-8")
                     let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                         userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 9)
                     }, { new: true })
-                ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData }))
+                ws.send(JSON.stringify({ status: 200, message: "success","Winning Amount": betData.betAmount.reduce((a, b) => a + b) * 9}))
                 }else {
-                    ws.send(JSON.stringify({status: 200, message: "success", userData: updatedData}))
+                    ws.send(JSON.stringify({status: 200, message: "success","Winning Ammount" : 0}));
                 }
             }
 
@@ -783,10 +783,10 @@ const readFile = fs.readFileSync(json, "utf-8")
                         let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                             userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 140)
                         }, { new: true })
-                         ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData }))
+                         ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": betData.betAmount.reduce((a, b) => a + b) * 140 }))
                     }
                     else {
-                         ws.send(JSON.stringify({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id }))
+                         ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": "0"}))
                     }
                 }
                 else if (betData.selectedNumbers.length > 1) {
@@ -796,8 +796,8 @@ const readFile = fs.readFileSync(json, "utf-8")
                         else return +a
                     }).join("")
 
-                    var updatedData;
-
+                    let priviousAmmount =  isUser.accountId.userTotalAmount;
+                    let updatedData
                     for (let b = 0; b < betData.selectedNumbers.length; b++) {
 
                         if (cardData == betData.selectedNumbers[b]) {
@@ -809,10 +809,15 @@ const readFile = fs.readFileSync(json, "utf-8")
                             }, { new: true })
 
                             isUser.accountId.userTotalAmount += (betData.betAmount.reduce((a, b) => a + b) * 12);
-                        }
-                        
+                        }                        
                     }
-                      ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData }))
+                    if(updatedData){
+                        ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount-priviousAmmount }))
+                    }
+                    else {
+                        ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount":0 }))
+                    }
+                      
                 }
             }
 
@@ -830,7 +835,7 @@ const readFile = fs.readFileSync(json, "utf-8")
                             userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 270)
                         }, { new: true })
 
-                        ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData }))
+                        ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": betData.betAmount.reduce((a, b) => a + b) * 270 }))
                     }
                 }
                 else if (betData.selectedNumbers.length > 1) {
@@ -840,7 +845,7 @@ const readFile = fs.readFileSync(json, "utf-8")
                     }).join("")
 
                     var updatedData;
-
+                    let priviousAmmount =  isUser.accountId.userTotalAmount;
                     for (let c = 0; c < betData.selectedNumbers.length; c++) {
 
                         if (cardData == betData.selectedNumbers[c]) {
@@ -854,19 +859,23 @@ const readFile = fs.readFileSync(json, "utf-8")
                             isUser.accountId.userTotalAmount += (betData.betAmount.reduce((a, b) => a + b) * 40);                            
                         }                       
                     }
-                    ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData }))
+                    if(updatedData){
+                        ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount-priviousAmmount }))
+                    }
+                    else {
+                        ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount":0 }))
+                    }
                 }
             }
         
             if (betData.betType == "TP") {
-
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.match(/\d+/)).sort((a, b) => a - b).map((a) => {
-                    if (a == 10) return 0
+                    if (a == 10) return 0;
                     else return +a
                 }).join("")
 
                 let updatedData;
-
+                let priviousAmmount =  isUser.accountId.userTotalAmount;
                 for (let d = 0; d < betData.selectedNumbers.length; d++) {
                     if (betData.selectedNumbers[a] == cardData) {
 
@@ -880,13 +889,19 @@ const readFile = fs.readFileSync(json, "utf-8")
 
                     }                    
                 }
-                ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData}))
+                if(updatedData){
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount-priviousAmmount }))
+                }
+                else {
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount":0 }))
+                }
             }
 
             if (betData.betType == "low-line") {
 
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
                 let updatedData
+                let priviousAmmount =  isUser.accountId.userTotalAmount;
                 for (let e = 0; e < betData.selectedNumbers.length; e++) {
                     if (cardData == betData.selectedNumbers[e]) {
                         let userTotalNewAmount = isUser.accountId.userTotalAmount
@@ -896,12 +911,20 @@ const readFile = fs.readFileSync(json, "utf-8")
                         isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;        
                     }                
                 }
-                ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData}))
+                if(updatedData){
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount-priviousAmmount }))
+                }
+                else {
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount":0 }))
+                }
             }
 
             if (betData.betType == "high-line") {
 
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
+                
+                let updatedData;
+                let priviousAmmount =  isUser.accountId.userTotalAmount;
 
                 for (let e = 0; e < betData.selectedNumbers.length; e++) {
                     if (cardData == betData.selectedNumbers[e]) {
@@ -910,14 +933,22 @@ const readFile = fs.readFileSync(json, "utf-8")
                             userTotalAmount: userTotalNewAmount * 1.90
                         }, { new: true })
                         isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;                        
-                    }                   
+                    }            
                 }
-                ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData}))
+                if(updatedData){
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount-priviousAmmount }))
+                }
+                else {
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount":0 }))
+                }
             }
 
             if (betData.betType == "odd") {
 
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
+
+                updatedData
+                let priviousAmmount =  isUser.accountId.userTotalAmount;
 
                 for (let e = 0; e < betData.selectedNumbers.length; e++) {
                     if (cardData == betData.selectedNumbers[e]) {
@@ -929,12 +960,19 @@ const readFile = fs.readFileSync(json, "utf-8")
                         
                     }
                 }
-                ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData}))
+                if(updatedData){
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount-priviousAmmount }))
+                }
+                else {
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount":0 }))
+                }
             }
 
             if (betData.betType == "even") {
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
 
+                updatedData
+                let priviousAmmount =  isUser.accountId.userTotalAmount;
                 for (let e = 0; e < betData.selectedNumbers.length; e++) {
                     if (cardData == betData.selectedNumbers[e]) {
                         let userTotalNewAmount = isUser.accountId.userTotalAmount
@@ -944,7 +982,12 @@ const readFile = fs.readFileSync(json, "utf-8")
                         isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;
                     }
                 }
-                ws.send(JSON.stringify({ status: 200, message: "success", userData: updatedData}))
+                if(updatedData){
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount-priviousAmmount }))
+                }
+                else {
+                    ws.send(JSON.stringify({ status: 200, message: "success", "Winning Amount":0 }))
+                }
             }
 }
 

@@ -5,7 +5,8 @@ const server = require("http").createServer(app);
 app.use(express.json())
 const {default:mongoose} =require("mongoose")
 const cors = require("cors");
-const bet = require("./controllers/bet");
+const {wssBet} = require("./controllers/bet");
+const { wsResults,wsResultPerUser } = require("./controllers/results");
 const wss = new WebSocket.Server({server:server});
 
 app.use(cors());
@@ -21,28 +22,30 @@ app.use("/games",require("./routes/results"))
 
 
 wss.on("connection", (ws) => {
-
   console.log("WebSocket connection established");
   ws.send("welcome new client")
   ws.on("message", (data) => { 
 
     let wsData =JSON.parse(data);
-        console.log(comingData);
+        console.log("wsData==>",wsData);
 
-if(wsData.endPoint == "placeBet"){
-bet.wssBet(wsData.req,ws);
+if(wsData.endPoints == "placeBet"){
+wssBet(wsData.req,ws);
 }
-if(wsData.endPoint == "results"){
-bet.wsResults(wsData.req,ws);
+if(wsData.endPoints == "results"){
+wsResults(wsData.req,ws);
 }
-if(wsData.endPoint == "userResult"){
-  bet.wsResultPerUser(wsData.req,ws);
+if(wsData.endPoints == "userResult"){
+wsResultPerUser(wsData.req,ws);
 }
 });
-  ws.on("close", () => {
-    console.log("WebSocket connection closed");
-  });
+
+wss.on("close", () => {
+  console.log("WebSocket connection closed");
 });
+});
+
+
 
 server.listen(3000, () =>
 {

@@ -8,7 +8,7 @@
     "start": "nodemon index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "shivam gupta",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",

@@ -1,10 +1,9 @@
-const bet = require("../controllers/bet");
+const {bet} = require("../controllers/bet");
 
 const router = require("express").Router();
 
 
-router.post("/bet",bet)
-
+router.post("/bet",bet);
 
 
 module.exports=router;

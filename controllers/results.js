@@ -34,13 +34,15 @@ const results = async (req, res) => {
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
 
                 if (+cardData == betData.selectedNumbers[0]) {
+
                     let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                         userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 9)
                     }, { new: true })
-                    usersData_succ.push({ status: 200, message: "success", userData: updatedData })
+
+                    usersData_succ.push({ status: 200, message: "success", "Winning Amount": (betData.betAmount.reduce((a, b) => a + b) * 9), betId: betData._id })
                 }
                 else {
-                    usersData_unsucc.push({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
+                    usersData_unsucc.push({ status: false, message: "card data invalid", "Winning Amount": "0", betId: betData._id })
                     continue;
                 }
             }
@@ -48,7 +50,6 @@ const results = async (req, res) => {
             if (betData.betType == "SP") {
 
                 if (betData.selectedNumbers.length == 1) {
-
                     let cardData = JSON.parse(readFile).cards.map((a) => +a.match(/\d+/)).sort((a, b) => a - b).map((a) => {
                         if (a == 10) return 0
                         else return +a
@@ -58,10 +59,11 @@ const results = async (req, res) => {
                         let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                             userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 140)
                         }, { new: true })
-                        usersData_succ.push({ status: 200, message: "success", userData: updatedData })
+
+                        usersData_succ.push({ status: 200, message: "success", "Winning Amount": (betData.betAmount.reduce((a, b) => a + b) * 140), betId: betData._id })
                     }
                     else {
-                        usersData_unsucc.push({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
+                        usersData_unsucc.push({ status: false, message: "card data invalid", "Winning Amount": "0", betId: betData._id })
                         continue;
                     }
                 }
@@ -73,7 +75,7 @@ const results = async (req, res) => {
                     }).join("")
 
                     var updatedData;
-
+                    let priviousAmmount = isUser.accountId.userTotalAmount;
                     for (let b = 0; b < betData.selectedNumbers.length; b++) {
 
                         if (cardData == betData.selectedNumbers[b]) {
@@ -86,13 +88,14 @@ const results = async (req, res) => {
 
                             isUser.accountId.userTotalAmount += (betData.betAmount.reduce((a, b) => a + b) * 12);
                         }
-                        else {
-                            usersData_unsucc.push({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
-                            continue;
-                        }
+
                     }
-                    // console.log(updatedData)
-                    usersData_succ.push({ status: 200, message: "success", userData: updatedData })
+                    if (updatedData) {
+                        usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+                    }
+                    else {
+                        usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
+                    }
                 }
             }
 
@@ -106,11 +109,15 @@ const results = async (req, res) => {
                     }).join("")
 
                     if (cardData == betData.selectedNumbers[0]) {
+
                         let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                             userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 270)
                         }, { new: true })
 
-                        usersData_succ.push({ status: 200, message: "success", userData: updatedData })
+                        usersData_succ.push({ status: 200, message: "success", "Winning Amount": betData.betAmount.reduce((a, b) => a + b) * 270, betId: betData._id })
+                    }
+                    else {
+                        usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
                     }
                 }
                 else if (betData.selectedNumbers.length > 1) {
@@ -120,7 +127,7 @@ const results = async (req, res) => {
                     }).join("")
 
                     var updatedData;
-
+                    let priviousAmmount = isUser.accountId.userTotalAmount;
                     for (let c = 0; c < betData.selectedNumbers.length; c++) {
 
                         if (cardData == betData.selectedNumbers[c]) {
@@ -132,12 +139,14 @@ const results = async (req, res) => {
                             }, { new: true })
 
                             isUser.accountId.userTotalAmount += (betData.betAmount.reduce((a, b) => a + b) * 40);
-                            usersData_succ.push({ status: 200, message: "success", userData: updatedData })
+
                         }
-                        else {
-                            usersData_unsucc.push({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
-                            continue;
-                        }
+                    }
+                    if (updatedData) {
+                        usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+                    }
+                    else {
+                        usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
                     }
                 }
             }
@@ -150,7 +159,7 @@ const results = async (req, res) => {
                 }).join("")
 
                 let updatedData;
-
+                let priviousAmmount = isUser.accountId.userTotalAmount;
                 for (let d = 0; d < betData.selectedNumbers.length; d++) {
 
                     let userTotalNewAmount = isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 700);
@@ -159,10 +168,13 @@ const results = async (req, res) => {
                         updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                             userTotalAmount: userTotalNewAmount
                         }, { new: true })
-                        usersData_succ.push({ status: 200, message: "success", userData: updatedData })
+
+                    }
+                    if (updatedData) {
+                        usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
                     }
                     else {
-                        usersData_unsucc.push({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
+                        usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
                     }
                 }
             }
@@ -171,6 +183,9 @@ const results = async (req, res) => {
 
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
 
+                let updatedData;
+                let priviousAmmount = isUser.accountId.userTotalAmount;
+
                 for (let e = 0; e < betData.selectedNumbers.length; e++) {
                     if (cardData == betData.selectedNumbers[e]) {
                         let userTotalNewAmount = isUser.accountId.userTotalAmount
@@ -178,11 +193,13 @@ const results = async (req, res) => {
                             userTotalAmount: userTotalNewAmount * 1.90
                         }, { new: true })
                         isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;
-                        usersData_succ.push({ status: 200, message: "success", userData: updatedData })
                     }
-                    else {
-                        usersData_unsucc.push({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
-                    }
+                }
+                if (updatedData) {
+                    usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+                }
+                else {
+                    usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
                 }
             }
 
@@ -190,18 +207,26 @@ const results = async (req, res) => {
 
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
 
+                let updatedData;
+
+                let priviousAmmount = isUser.accountId.userTotalAmount;
+
                 for (let e = 0; e < betData.selectedNumbers.length; e++) {
                     if (cardData == betData.selectedNumbers[e]) {
+
                         let userTotalNewAmount = isUser.accountId.userTotalAmount
                         updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                             userTotalAmount: userTotalNewAmount * 1.90
                         }, { new: true })
+
                         isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;
-                        usersData_succ.push({ status: 200, message: "success", userData: updatedData })
                     }
-                    else {
-                        usersData_unsucc.push({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
-                    }
+                }
+                if (updatedData) {
+                    usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+                }
+                else {
+                    usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
                 }
             }
 
@@ -209,6 +234,10 @@ const results = async (req, res) => {
 
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
 
+                let updatedData;
+
+                let priviousAmmount = isUser.accountId.userTotalAmount;
+
                 for (let e = 0; e < betData.selectedNumbers.length; e++) {
                     if (cardData == betData.selectedNumbers[e]) {
                         let userTotalNewAmount = isUser.accountId.userTotalAmount
@@ -216,17 +245,22 @@ const results = async (req, res) => {
                             userTotalAmount: userTotalNewAmount * 1.90
                         }, { new: true })
                         isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;
-                        usersData_succ.push({ status: 200, message: "success", userData: updatedData })
+
                     }
-                    else {
-                        usersData_unsucc.push({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
-                    }
+                }
+                if (updatedData) {
+                    usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+                }
+                else {
+                    usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
                 }
             }
 
             if (betData.betType == "even") {
                 let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
 
+                let updatedData;
+                let priviousAmmount = isUser.accountId.userTotalAmount;
                 for (let e = 0; e < betData.selectedNumbers.length; e++) {
                     if (cardData == betData.selectedNumbers[e]) {
                         let userTotalNewAmount = isUser.accountId.userTotalAmount
@@ -234,11 +268,14 @@ const results = async (req, res) => {
                             userTotalAmount: userTotalNewAmount * 1.90
                         }, { new: true })
                         isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;
-                        usersData_succ.push({ status: 200, message: "success", userData: updatedData })
+
                     }
-                    else {
-                        usersData_unsucc.push({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
-                    }
+                }
+                if (updatedData) {
+                    usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+                }
+                else {
+                    usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
                 }
             }
         }
@@ -277,9 +314,9 @@ const resultPerUser = async (req, res) => {
             let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                 userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 9)
             }, { new: true })
-            res.status({ status: 200, message: "success", userData: updatedData })
+            res.send({ status: 200, message: "success", "Winning Amount ": (betData.betAmount.reduce((a, b) => a + b) * 9), betId: betData._id })
         } else {
-            res.send({ status: 200, message: "success", userData: updatedData })
+            res.send({ status: 200, message: "success", "Winning Amount ": 0, betId: betData._id })
         }
     }
 
@@ -296,10 +333,10 @@ const resultPerUser = async (req, res) => {
                 let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                     userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 140)
                 }, { new: true })
-                return res.status({ status: 200, message: "success", userData: updatedData })
+                return res.send({ status: 200, message: "success", "Winning Amount": (betData.betAmount.reduce((a, b) => a + b) * 140), betId: betData._id })
             }
             else {
-                return res.status({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
+                return res.send({ status: false, message: "success", "winning Amount": 0, betId: betData._id })
             }
         }
         else if (betData.selectedNumbers.length > 1) {
@@ -310,7 +347,7 @@ const resultPerUser = async (req, res) => {
             }).join("")
 
             var updatedData;
-
+            let priviousAmmount = isUser.accountId.userTotalAmount
             for (let b = 0; b < betData.selectedNumbers.length; b++) {
 
                 if (cardData == betData.selectedNumbers[b]) {
@@ -321,14 +358,15 @@ const resultPerUser = async (req, res) => {
                         userTotalAmount: userTotalNewAmount
                     }, { new: true })
 
-                    if (updatedData)
-                        isUser.accountId.userTotalAmount += (betData.betAmount.reduce((a, b) => a + b) * 12);
+                    isUser.accountId.userTotalAmount += (betData.betAmount.reduce((a, b) => a + b) * 12);
                 }
-                // else {
-                //     res.send({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
-                // }
             }
-            return res.send({ status: 200, message: "success", userData: updatedData })
+            if (updatedData) {
+                usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+            }
+            else {
+                usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
+            }
         }
     }
 
@@ -345,8 +383,10 @@ const resultPerUser = async (req, res) => {
                 let updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
                     userTotalAmount: +isUser.accountId.userTotalAmount + (betData.betAmount.reduce((a, b) => a + b) * 270)
                 }, { new: true })
-
-                return res.send({ status: 200, message: "success", userData: updatedData })
+                return res.send({ status: 200, message: "success", "Winning Amount": +(betData.betAmount.reduce((a, b) => a + b) * 270), betId: betData._id })
+            }
+            else {
+                return res.send({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
             }
         }
         else if (betData.selectedNumbers.length > 1) {
@@ -356,7 +396,7 @@ const resultPerUser = async (req, res) => {
             }).join("")
 
             var updatedData;
-
+            let priviousAmmount = isUser.accountId.userTotalAmount;
             for (let c = 0; c < betData.selectedNumbers.length; c++) {
 
                 if (cardData == betData.selectedNumbers[c]) {
@@ -367,16 +407,16 @@ const resultPerUser = async (req, res) => {
                         userTotalAmount: userTotalNewAmount
                     }, { new: true })
 
-                    if (updatedData)
-                        isUser.accountId.userTotalAmount += (betData.betAmount.reduce((a, b) => a + b) * 40);
-                    // res.send({ status: 200, message: "success", userData: updatedData })
+                    isUser.accountId.userTotalAmount += (betData.betAmount.reduce((a, b) => a + b) * 40);
                 }
-                // else {
-                //    return res.send({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
-                //     continue;
-                // }
+
             }
-            return res.send({ status: 200, message: "success", userData: updatedData })
+            if (updatedData) {
+                usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+            }
+            else {
+                usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
+            }
         }
     }
 
@@ -388,6 +428,7 @@ const resultPerUser = async (req, res) => {
         }).join("")
 
         let updatedData;
+        let priviousAmmount = isUser.accountId.userTotalAmount;
 
         for (let d = 0; d < betData.selectedNumbers.length; d++) {
 
@@ -399,19 +440,25 @@ const resultPerUser = async (req, res) => {
                     userTotalAmount: userTotalNewAmount
                 }, { new: true })
 
+                isUser.accountId.userTotalAmount = userTotalNewAmount
             }
-            // else {
-            //     res.send({ status: false, message: "card data invalid", winAmount: "0", betId: betData._id })
-            // }
+
         }
-        res.send({ status: 200, message: "success", userData: updatedData })
+        if (updatedData) {
+            usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+        }
+        else {
+            usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
+        }
     }
 
     if (betData.betType == "low-line") {
 
         let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
         let updatedData;
+        let priviousAmmount = isUser.accountId.userTotalAmount;
         for (let e = 0; e < betData.selectedNumbers.length; e++) {
+
             if (cardData == betData.selectedNumbers[e]) {
                 let userTotalNewAmount = isUser.accountId.userTotalAmount
                 updatedData = await userAccount.findOneAndUpdate({ userId: betData.userId }, {
@@ -419,15 +466,22 @@ const resultPerUser = async (req, res) => {
                 }, { new: true })
                 isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;
             }
-
         }
-        return res.send({ status: 200, message: "success", userData: updatedData })
+        if (updatedData) {
+            usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+        }
+        else {
+            usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
+        }
     }
 
     if (betData.betType == "high-line") {
 
         let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
+
         let updatedData
+        let priviousAmmount = isUser.accountId.userTotalAmount;
+
         for (let e = 0; e < betData.selectedNumbers.length; e++) {
             if (cardData == betData.selectedNumbers[e]) {
                 let userTotalNewAmount = isUser.accountId.userTotalAmount
@@ -438,13 +492,21 @@ const resultPerUser = async (req, res) => {
                 res.send({ status: 200, message: "success", userData: updatedData })
             }
         }
-        return res.send({ status: 200, message: "success", userData: updatedData })
+        if (updatedData) {
+            usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+        }
+        else {
+            usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
+        }
     }
 
     if (betData.betType == "odd") {
 
         let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0]
+
         let updatedData
+        let priviousAmmount = isUser.accountId.userTotalAmount;
+
         for (let e = 0; e < betData.selectedNumbers.length; e++) {
             if (cardData == betData.selectedNumbers[e]) {
                 let userTotalNewAmount = isUser.accountId.userTotalAmount
@@ -453,14 +515,19 @@ const resultPerUser = async (req, res) => {
                 }, { new: true })
                 isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;
             }
-
         }
-        return res.send({ status: 200, message: "success", userData: updatedData })
+        if (updatedData) {
+            usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+        }
+        else {
+            usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
+        }
     }
 
     if (betData.betType == "even") {
         let cardData = JSON.parse(readFile).cards.map((a) => +a.slice(0, 1)).reduce((a, b) => a + b).toString().split("").slice(-1)[0];
-
+        let updatedData;
+        let priviousAmmount = isUser.accountId.userTotalAmount;
         for (let e = 0; e < betData.selectedNumbers.length; e++) {
             if (cardData == betData.selectedNumbers[e]) {
                 let userTotalNewAmount = isUser.accountId.userTotalAmount
@@ -470,7 +537,12 @@ const resultPerUser = async (req, res) => {
                 isUser.accountId.userTotalAmount = isUser.accountId.userTotalAmount * 1.90;
             }
         }
-        return res.send({ status: 200, message: "success", userData: updatedData })
+        if (updatedData) {
+            usersData_succ.push({ status: 200, message: "success", "Winning Amount": updatedData.userTotalAmount - priviousAmmount, betId: betData._id })
+        }
+        else {
+            usersData_unsucc.push({ status: 200, message: "success", "Winning Amount": 0, betId: betData._id })
+        }
     }
 }
 
